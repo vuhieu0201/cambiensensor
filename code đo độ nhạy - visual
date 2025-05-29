@@ -1,0 +1,42 @@
+import serial
+import time
+import numpy as np
+
+def do_nhay_cam_bien_sieu_am(khoang_cach_cm):
+    khoang_cach_cm = np.array(khoang_cach_cm)
+    thay_doi = np.abs(np.diff(khoang_cach_cm))
+    thay_doi = thay_doi[thay_doi > 0]
+    return np.min(thay_doi) if len(thay_doi) > 0 else 0.0
+
+def tinh_do_nhay_trung_binh(ds_do_lieu):
+    do_nhay_list = [do_nhay_cam_bien_sieu_am(lan) for lan in ds_do_lieu if len(lan) > 1]
+    return np.mean(do_nhay_list) if do_nhay_list else 0.0
+
+def doc_du_lieu_tu_arduino(port='COM16', baudrate=9600, so_lan=3, timeout_sec=20):
+    ser = serial.Serial(port, baudrate, timeout=2)
+    time.sleep(2)  # đợi Arduino khởi động
+
+    ds_do_lieu = []
+    start = time.time()
+    while len(ds_do_lieu) < so_lan and (time.time() - start) < timeout_sec:
+        dong = ser.readline().decode().strip()
+        if dong:
+            print(f"Nhận: {dong}")  # In ra để kiểm tra
+        if dong.startswith("Lan"):
+            try:
+                data_str = dong.split(":")[1].strip()
+                so_lieu = [float(x.strip()) for x in data_str.split(",")]
+                ds_do_lieu.append(so_lieu)
+                print(f"Đã ghi: {so_lieu}")
+            except Exception as e:
+                print(f"Lỗi phân tích dòng: {dong} ({e})")
+
+    ser.close()
+    if len(ds_do_lieu) < so_lan:
+        print("Không đủ số lần đo, kiểm tra lại Arduino hoặc kết nối!")
+    return ds_do_lieu
+
+# Gọi hàm và tính độ nhạy
+du_lieu = doc_du_lieu_tu_arduino(port='COM16')  # đổi 'COM3' theo cổng Serial máy bạn
+do_nhay_tb = tinh_do_nhay_trung_binh(du_lieu)
+print(f"Độ nhạy trung bình: {do_nhay_tb:.2f} cm")

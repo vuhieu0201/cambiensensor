@@ -1,0 +1,43 @@
+#define TRIG_PIN 9
+#define ECHO_PIN 10
+
+#define SO_LAN_KHAO_SAT 3      // Số lần khảo sát
+#define SO_MAU_MOI_LAN 6       // Số mẫu mỗi lần
+
+float do_khoang_cach_cm() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  long duration = pulseIn(ECHO_PIN, HIGH);
+  float distance_cm = duration * 0.0343 / 2.0;
+  return distance_cm;
+}
+
+void setup() {
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  Serial.begin(9600);
+  delay(2000);  // Chờ Arduino ổn định
+}
+
+void loop() {
+  for (int lan = 0; lan < SO_LAN_KHAO_SAT; lan++) {
+    Serial.print("Lan "); Serial.print(lan); Serial.print(": ");
+
+    for (int i = 0; i < SO_MAU_MOI_LAN; i++) {
+      float khoang_cach = do_khoang_cach_cm();
+      Serial.print(khoang_cach, 2);
+      if (i < SO_MAU_MOI_LAN - 1) Serial.print(", ");
+      delay(200);  // Thời gian giữa 2 lần đo
+    }
+
+    Serial.println();  // Xuống dòng sau mỗi lần khảo sát
+    delay(1000);       // Thời gian giữa 2 lần khảo sát
+  }
+
+  // Sau khi đo xong, dừng lại (không lặp lại mãi)
+  while (true);
+}

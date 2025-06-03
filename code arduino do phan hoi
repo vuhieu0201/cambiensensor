@@ -1,0 +1,28 @@
+#define trigPin 14  // D5 = GPIO14
+#define echoPin 12  // D6 = GPIO12
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  long duration;
+  float distance;
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH, 30000);
+  distance = duration * 0.034 / 2;
+
+  if (distance > 0 && distance < 400) {
+    Serial.println(distance);
+  }
+
+  delay(500);
+}

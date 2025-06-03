@@ -1,0 +1,39 @@
+#define TRIG_PIN 14
+#define ECHO_PIN 12
+#define ALPHA 0.1
+
+float previousFilteredLPF = 10.2;
+
+float measureDistance() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  
+  long duration = pulseIn(ECHO_PIN, HIGH);
+  float distance = duration * 0.034 / 2.0;  // tính ra float, cm
+  return distance;
+}
+
+float applyLowPassFilter(float newMeasurement) {
+  previousFilteredLPF = ALPHA * newMeasurement + (1 - ALPHA) * previousFilteredLPF;
+  return previousFilteredLPF;
+}
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+}
+
+void loop() {
+  float raw = measureDistance();
+  float filtered = applyLowPassFilter(raw);
+  
+  Serial.print("Raw: ");
+  Serial.print(raw, 2);        // In ra 2 số sau dấu phẩy
+  Serial.print(" cm | Filtered: ");
+  Serial.println(filtered, 2); // In ra 2 số sau dấu phẩy
+  delay(500);
+}

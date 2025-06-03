@@ -1,0 +1,38 @@
+import serial
+import time
+import matplotlib.pyplot as plt  # Thêm thư viện vẽ
+
+# ⚠️ THAY đúng COM của ESP8266 (VD: 'COM4', 'COM7', ...)
+esp = serial.Serial(port='COM17', baudrate=9600, timeout=1)
+time.sleep(2)
+
+max_measurements = 50
+measurements = 0
+prev_time = time.perf_counter()
+results = []
+
+print("🔎 Bắt đầu đo từ ESP8266...\n")
+
+while measurements < max_measurements:
+    try:
+        line = esp.readline().decode('utf-8').strip()
+    except UnicodeDecodeError:
+        continue
+
+    if line:
+        try:
+            distance = float(line)
+            current_time = time.perf_counter()
+            response_time = current_time - prev_time
+            prev_time = current_time
+
+            measurements += 1
+            results.append((measurements, distance, response_time))
+
+            print(f"🔹 Lan do {measurements}: {distance:.2f} cm | thoi gian phan hoi {response_time:.3f} giây")
+
+        except ValueError:
+            continue
+
+    time.sleep(0.01)
+

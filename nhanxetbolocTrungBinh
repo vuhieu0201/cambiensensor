@@ -1,9 +1,10 @@
+
 === PHÂN TÍCH ===
 Số mẫu thu được: 100
-Sai số trung bình Raw (chưa lọc): 4.54%
-Sai số trung bình Filtered (lọc trung bình): 3.87%
-Nhiễu Raw (std): 0.57
-Nhiễu Filtered (std): 0.46
-Hiệu quả lọc (giảm nhiễu): 18.86%
-Thời gian đáp ứng trung bình (Raw): 486.55 ms
-Thời gian đáp ứng trung bình (Filtered ~ trễ hơn): 973.10 ms
+Sai số trung bình Raw (chưa lọc): 4.10%
+Sai số trung bình Filtered (lọc trung bình): 2.96%
+Nhiễu Raw (std): 0.48
+Nhiễu Filtered (std): 0.35
+Hiệu quả lọc (giảm nhiễu): 26.57%
+Thời gian đáp ứng trung bình (Raw): 486.59 ms
+Thời gian đáp ứng trung bình (Filtered ~ trễ hơn): 973.17 ms

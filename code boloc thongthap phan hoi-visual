@@ -1,0 +1,63 @@
+import serial
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ==== Cấu hình ====
+PORT = 'COM17'  # ⚠️ Đặt đúng COM ESP8266
+BAUD = 9600
+NUM_SAMPLES = 100
+
+# ==== Dữ liệu ====
+raw_values = []
+filtered_values = []
+timestamps = []
+
+# ==== Kết nối Serial ====
+ser = serial.Serial(PORT, BAUD, timeout=1)
+time.sleep(2)
+
+print("📡 Đang thu dữ liệu đo...\n")
+
+# ==== Thu thập dữ liệu ====
+start_time = time.time()
+while len(raw_values) < NUM_SAMPLES:
+    line = ser.readline().decode(errors='ignore').strip()
+    timestamp = time.time() - start_time
+    if "Raw" in line and "Filtered" in line:
+        try:
+            parts = line.split('|')
+            raw = float(parts[0].split(':')[1].strip().replace("cm", ""))
+            filtered = float(parts[1].split(':')[1].strip())
+            raw_values.append(raw)
+            filtered_values.append(filtered)
+            timestamps.append(timestamp)
+
+            if len(timestamps) >= 2:
+                dt = (timestamps[-1] - timestamps[-2]) * 1000  # ms
+                raw_response_time = dt
+                filtered_response_time = dt * 2  # Ước lượng EMA trễ ~2 mẫu
+                print(f" Raw: {raw:.2f} |  Filtered: {filtered:.2f} |  Raw: {raw_response_time:.1f} ms | Filtered: ~{filtered_response_time:.1f} ms")
+
+        except:
+            continue
+ser.close()
+
+# ==== Phân tích sau khi thu thập ====
+raw_np = np.array(raw_values)
+filtered_np = np.array(filtered_values)
+timestamps_np = np.array(timestamps)
+
+# Khoảng thời gian giữa các mẫu (ms)
+dt = np.diff(timestamps_np)
+avg_dt_ms = np.mean(dt) * 1000
+
+# Ước lượng độ trễ EMA
+estimated_filter_delay_ms = avg_dt_ms
+
+# ==== Kết quả tổng hợp ====
+print("\n📊 KẾT QUẢ PHÂN TÍCH")
+print(f"- Số mẫu: {len(raw_values)}")
+print(f"- Thời gian trung bình giữa 2 mẫu: {avg_dt_ms:.2f} ms")
+print(f"- Thời gian phản hồi trung bình (Raw): {avg_dt_ms:.2f} ms")
+print(f"- Thời gian phản hồi trung bình (Filtered): ~{avg_dt_ms + estimated_filter_delay_ms:.2f} ms")

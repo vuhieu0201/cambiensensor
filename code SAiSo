@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # ==== Cấu hình ====
 PORT = 'COM17'
 BAUD = 9600
-GROUND_TRUTH = 10.0  # khoảng cách thực tế (cm)
+GROUND_TRUTH = 8.2  # khoảng cách thực tế (cm)
 NUM_SAMPLES = 100
 
 raw_values = []

@@ -1,0 +1,11 @@
+Nhận xét bộ lọc Thông Thấp:
+gt=10.0
+=== PHÂN TÍCH ===
+Số mẫu thu được: 100
+Sai số trung bình Raw (chưa lọc): 5.50%
+Sai số trung bình Filtered (đã lọc): 3.79%
+Nhiễu Raw (std): 0.66
+Nhiễu Filtered (std): 0.20
+Hiệu quả lọc (giảm nhiễu): 70.48%
+Thời gian đáp ứng trung bình (Raw): 500.17 ms
+Thời gian đáp ứng trung bình (Filtered ~ trễ hơn): 1000.34 ms
